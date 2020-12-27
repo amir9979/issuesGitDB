@@ -1,6 +1,6 @@
 import git
 import os
-from .javadiff import diff as d
+from javadiff import diff as d
 import Debug
 import JavaAnalyzer as a
 import time
@@ -30,6 +30,47 @@ def get_all_commits():
         if Debug.mode():
             print("commit list done")
     return all_commits
+
+
+def _get_commits_files(repo):
+    data = repo.git.log('--numstat','--pretty=format:"sha: %H"').split("sha: ")
+    comms = {}
+    for d in data[1:]:
+        d = d.replace('"', '').replace('\n\n', '\n').split('\n')
+        commit_sha = d[0]
+        comms[commit_sha] = []
+        for x in d[1:-1]:
+            insertions, deletions, name = x.split('\t')
+            names = fix_renamed_files([name])
+            comms[commit_sha].extend(list(map(lambda n: CommittedFile(commit_sha, n, insertions, deletions), names)))
+    return dict(map(lambda x: (repo.commit(x), comms[x]), filter(lambda x: comms[x], comms)))
+
+
+def fix_renamed_files(files):
+    """
+    fix the paths of renamed files.
+    before : u'tika-core/src/test/resources/{org/apache/tika/fork => test-documents}/embedded_with_npe.xml'
+    after:
+    u'tika-core/src/test/resources/org/apache/tika/fork/embedded_with_npe.xml'
+    u'tika-core/src/test/resources/test-documents/embedded_with_npe.xml'
+    :param files: self._files
+    :return: list of modified files in commit
+    """
+    new_files = []
+    for file in files:
+        if "=>" in file:
+            if "{" and "}" in file:
+                # file moved
+                src, dst = file.split("{")[1].split("}")[0].split("=>")
+                fix = lambda repl: re.sub(r"{[\.a-zA-Z_/\-0-9]* => [\.a-zA-Z_/\-0-9]*}", repl.strip(), file)
+                new_files.extend(map(fix, [src, dst]))
+            else:
+                # full path changed
+                new_files.extend(map(lambda x: x.strip(), file.split("=>")))
+                pass
+        else:
+            new_files.append(file)
+    return new_files
 
 
 def filter_commits(commits_list):  # return a list with commits that has java files
@@ -81,8 +122,12 @@ def get_commit_changes(commit):
         commit = repo.commit(commit)
     relevant_data = []
     try:
-        [before_methods, changed_methods_before, after_methods, changed_methods_after] = d.get_changed_methods(
+        commit_diff = d.get_commit_diff(
             repo_path, commit)
+        methods_dict = commit_diff.get_methods_dict()
+        before_methods = methods_dict['before_changed'] + methods_dict['before_unchanged']
+        changed_methods_before = methods_dict['before_changed']
+        changed_methods_after = methods_dict['after_changed']
     except Exception as e:
         print(e)
         return None

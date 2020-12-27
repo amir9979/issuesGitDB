@@ -13,6 +13,14 @@ def get_connection(path):
 def close_connection(conn):
     if conn: conn.close()
 
+
+def init(conn):
+    with open("table creation.sql") as f:
+        cursor = conn.cursor()
+        sql_as_string = f.read()
+        cursor.executescript(sql_as_string)
+
+
 def insert_project(conn, projectName, JiraProjectId, GitRepositoryPath):
     if Debug.mode:
         print("**insert project {0} the DB".format(projectName))
