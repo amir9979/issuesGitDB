@@ -8,10 +8,10 @@ import pathlib
 if __name__ == '__main__':
     # Set variables according to the project
 
-    DB_PATH = str(pathlib.Path().absolute()) + "\..\CommitIssueDB.db"
+    DB_PATH = "CommitIssueDB.db"
     PROJECT_NAME = "commons-math"
     GIT_REPO_PATH = r"https://github.com/apache/commons-math"
-    GIT_REPO_PATH_LOCAL = r"C:\Users\shir0\commons-math"
+    GIT_REPO_PATH_LOCAL = r"C:\temp\commons-math"
     JIRA_PATH = r"http://issues.apache.org/jira"
     JIRA_PROJECT_ID = "MATH"
 
