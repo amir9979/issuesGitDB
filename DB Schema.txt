@@ -1,0 +1,8 @@
+Matrix DB:
+
+Projects(ProjectID, ProjectName, JiraProjectId, GitRepositoryPath)
+Commits(CommitID, ProjectName, Summary, Message, Date)
+CommitFiles(CommitID, Path, FileType)
+CommitChanges(CommitID, MethodName, NewPath, NewContent, OldPath, OldContent)
+JiraIssues(IssueID, IssueType, ProjectName, Summary, Description, Status)
+CommitsIssuesLinkage(IssueID, CommitID)
