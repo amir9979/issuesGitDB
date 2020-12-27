@@ -1,17 +1,19 @@
-import MatrixDB as db
-import GitCommits as g
-import JiraIssues as j
-import Debug
-import Matrix
+from src import MatrixDB as db
+from src import GitCommits as g
+from src import JiraIssues as j
+from src import Debug
+from src import Matrix
+import pathlib
 
 if __name__ == '__main__':
     # Set variables according to the project
-    DB_PATH = r"C:\Users\salmo\Desktop\DnD - Matrix\db\CommitIssueDB.db"
-    PROJECT_NAME = "Common-Lang"
-    GIT_REPO_PATH = r"https://github.com/apache/commons-lang"
-    GIT_REPO_PATH_LOCAL = r"C:\Users\salmo\fsp"
+
+    DB_PATH = str(pathlib.Path().absolute()) + "\..\CommitIssueDB.db"
+    PROJECT_NAME = "commons-math"
+    GIT_REPO_PATH = r"https://github.com/apache/commons-math"
+    GIT_REPO_PATH_LOCAL = r"C:\Users\shir0\commons-math"
     JIRA_PATH = r"http://issues.apache.org/jira"
-    JIRA_PROJECT_ID = "LANG"
+    JIRA_PROJECT_ID = "MATH"
 
     # Get DB connection
     db_connection = db.get_connection(DB_PATH)
@@ -44,8 +46,10 @@ if __name__ == '__main__':
 
     # Commits Handling
     g.set_repo_path(GIT_REPO_PATH_LOCAL)
+    # len(g.get_all_commits()) = 6024
     commits = g.filter_commits(g.get_all_commits())
     if Debug.mode:
+        # len(commits) - 4546
         print("number of commits: {0}".format(len(commits)))
 
     for commit in commits:

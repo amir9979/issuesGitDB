@@ -3,8 +3,10 @@ import operator
 import javalang
 from javalang.tree import ClassDeclaration
 
-try: from methodData import MethodData
-except: from .methodData import MethodData
+try:
+    from methodData import MethodData
+except:
+    from .methodData import MethodData
 import os
 
 
@@ -25,11 +27,12 @@ def extract_classes_names(parsed_data, package):
     return names
 
 class SourceFile(object):
-    def __init__(self, contents, file_name, indices=()):
+    def __init__(self, contents, file_name, indices=(),  analyze_source_lines=True):
         self.contents = contents
         self.changed_indices = indices
         self.file_name = file_name
         self.methods = dict()
+        self.modified_names = []
         try:
             if file_name.endswith(".java"):
                 tokens = list(javalang.tokenizer.tokenize("".join(self.contents)))
@@ -41,12 +44,12 @@ class SourceFile(object):
                 if packages:
                     self.package_name = packages[0].name
                     # self.modified_names = extract_classes_names(parsed_data)
-                    self.modified_names = map(lambda c: self.package_name + "." + c.name, classes)
-                self.methods = self.get_methods_by_javalang(tokens, parsed_data)
+                    self.modified_names = list(map(lambda c: self.package_name + "." + c.name, classes))
+                self.methods = self.get_methods_by_javalang(tokens, parsed_data, analyze_source_lines=analyze_source_lines)
         except:
             raise
 
-    def get_methods_by_javalang(self, tokens, parsed_data):
+    def get_methods_by_javalang(self, tokens, parsed_data,  analyze_source_lines=True):
         def get_method_end_position(method, seperators):
             method_seperators = seperators[list(map(id, sorted(seperators + [method],
                                                           key=lambda x: (x.position.line, x.position.column)))).index(
@@ -77,7 +80,6 @@ class SourceFile(object):
                 class_name = class_name + "." + class_declaration.name
             else:
                 class_name = class_declaration.name
-
             methods = list(map(operator.itemgetter(1), class_declaration.filter(javalang.tree.MethodDeclaration)))
             constructors = list(map(operator.itemgetter(1), class_declaration.filter(javalang.tree.ConstructorDeclaration)))
             for method in methods + constructors:
@@ -86,11 +88,14 @@ class SourceFile(object):
                     continue
                 method_start_position = method.position
                 method_end_position = get_method_end_position(method, seperators)
-                method_used_lines = list(filter(lambda line: method_start_position.line <= line <= method_end_position.line, used_lines))
-                parameters = list(map(lambda parameter: parameter.type.name + ('[]' if parameter.varargs else ''), method.parameters))
+                method_used_lines = list(filter(lambda line: method_start_position.line - 1 <= line <=
+                                                             method_end_position.line, used_lines))
+                parameters = list(map(lambda parameter: parameter.type.name + ('[]' if parameter.varargs else ''),
+                                      method.parameters))
                 method_data = MethodData(".".join([self.package_name, class_name, method.name]),
                                          method_start_position.line, method_end_position.line,
-                                         self.contents, self.changed_indices, method_used_lines, parameters, self.file_name, method)
+                                         self.contents, self.changed_indices, method_used_lines, parameters,
+                                         self.file_name, method, analyze_source_lines=analyze_source_lines, tokens=tokens)
                 methods_dict[method_data.id] = method_data
         return methods_dict
 

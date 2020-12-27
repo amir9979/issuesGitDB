@@ -1,6 +1,6 @@
-import GitCommits as g
-import JiraIssues as j
-import Debug
+from src import GitCommits as g
+from src import JiraIssues as j
+from src import Debug
 
 JQL = 'project = LANG AND issuetype = "New Feature" AND status = Closed'
 

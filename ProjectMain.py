@@ -1,6 +1,6 @@
-import GitCommits as g
-import JiraIssues as j
-import Matrix as m
+from src import GitCommits as g
+from src import JiraIssues as j
+from src import Matrix as m
 
 
 def main():
@@ -11,7 +11,7 @@ def main():
     jira_bugs_improvements = j.get_issues_list(jql_bugs_improvements)
 
     # get commits
-    repo_path = r"C:\Users\salmo\fsp"
+    repo_path =  r"C:\Users\shir0\commons-lang"
     commits = g.get_all_commits(repo_path)
 
     # create matrix

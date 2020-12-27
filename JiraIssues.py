@@ -1,7 +1,9 @@
 from jira import JIRA
 from jira.exceptions import JIRAError
-import Debug
+
 from datetime import datetime
+
+from src import Debug
 
 jira = JIRA(r"http://issues.apache.org/jira")
 

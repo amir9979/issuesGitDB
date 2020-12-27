@@ -22,7 +22,7 @@ except ImportError:
 from functools import reduce
 
 
-def get_changed_methods(git_path, child, parent=None):
+def get_changed_methods(git_path, child, parent=None, analyze_source_lines=True):
     repo = git.Repo(git_path)
     if isinstance(child, str):
         child = repo.commit(child)
@@ -30,16 +30,16 @@ def get_changed_methods(git_path, child, parent=None):
         parent = child.parents[0]
     repo_files = list(filter(lambda x: x.endswith(".java") and not x.lower().endswith("test.java"),
                         repo.git.ls_files().split()))
-    return get_changed_methods_from_file_diffs(CommitsDiff(child, parent).diffs)
+    return get_changed_methods_from_file_diffs(CommitsDiff(child, parent, analyze_source_lines=True).diffs)
 
 
-def get_changed_exists_methods(git_path, child, parent=None):
+def get_changed_exists_methods(git_path, child, parent=None, analyze_source_lines=True):
     repo = git.Repo(git_path)
     if isinstance(child, str):
         child = repo.commit(child)
     if not parent:
         parent = child.parents[0]
-    return get_changed_exists_methods_from_file_diffs(CommitsDiff(child, parent).diffs)
+    return get_changed_exists_methods_from_file_diffs(CommitsDiff(child, parent, analyze_source_lines=True).diffs)
 
 
 def get_modified_functions(git_path):
@@ -99,7 +99,7 @@ def get_methods_per_commit(git_path, json_out_file):
     methods_per_commit = {}
     for i in range(len(commits) - 1):
         try:
-            methods = get_changed_methods(git_path, commits[i + 1])
+            methods = get_changed_methods(git_path, commits[i + 1], analyze_source_lines=True)
         except:
             continue
         if methods:

@@ -1,8 +1,10 @@
+import json
+import pathlib
 import sqlite3
-import GitCommits as g
-import JiraIssues as j
-import JavaAnalyzer as a
-import Debug
+from src import GitCommits as g
+from src import JiraIssues as j
+from src import JavaAnalyzer as a
+from src import Debug
 
 
 def get_connection(path):
@@ -68,8 +70,9 @@ def insert_commit(conn, commit, projectName):
         insert_file(conn, commit, test_file, "TEST")
 
     changes = g.get_commit_changes(commit)
-    for diff in changes:
-        insert_changes(conn, commit, diff)
+    if changes is not None:
+        for diff in changes:
+            insert_changes(conn, commit, diff)
 
 
 def insert_linkage(conn, commit, issue):
@@ -118,35 +121,42 @@ def insert_changes(conn, commit, diff):
     changed_lines = a.analyze_changes(old_lines, new_lines)
 
     for line in changed_lines:
-        insert_line(conn, commit, method_name, line)
+        insert_line(conn, commit, method_name, line, new_path)
 
-def insert_line(conn, commit, method_name, line):
+def insert_line(conn, commit, method_name, line, new_path):
     commit_id = g.get_commit_id(commit)
     line_type = line.line_type
     line_number = line.line_number
     content = line.content
     changed = line.is_changed
-    meaning = line.meaning
-
+    if line.meaning == '{}':
+        meaning = ""
+    else:
+        meaning = json.dumps(line.meaning)
+    if line.tokens == '{}':
+        token = ""
+    else:
+        token = json.dumps(line.tokens)
     try:
         with conn:
             cur = conn.cursor()
-            SQL = "INSERT INTO MethodData (CommitID, MethodName, OldNew, LineNumber, Content, Changed, Meaning) VALUES (?,?,?,?,?,?,?)"
-            cur.execute(SQL, (commit_id, method_name, line_type, line_number, content, changed, meaning))
+            SQL = "INSERT INTO MethodData (CommitID, MethodName, OldNew, LineNumber, Content, Changed, Meaning, Tokens, NewPath) VALUES (?,?,?,?,?,?,?, ?, ?)"
+            cur.execute(SQL, (commit_id, method_name, line_type, line_number, content, changed, meaning, token, new_path))
 
     except sqlite3.Error as e:
-        # print("Error %s:" % e.args[0])
+        print("Error %s:" % e.args[0])
         e = None
 
 
 if __name__ == '__main__':
     try:
-        db_path = r"C:\Users\salmo\Desktop\DnD - Matrix\db\CommitIssueDB.db"
-        issue1 = j.get_issues_list("key = 'LANG-1534'")[0]
+        import json
+        db_path =  str(pathlib.Path().absolute()) + "\..\Test_shir.db"
+        # issue1 = j.get_issues_list("key = 'LANG-1606'")[0]
         con = get_connection(db_path)
-        # insert_project(con, "TEST_project", "T_jiraId", "T_repositoryPath")
-        insert_issue(con, issue1, "TEST_project")
-        commit1 = g.get_commit_by_id("a6a2d04877d91a4c7cfff889bb64e2627ca60994")
+        insert_project(con, "TEST_project", "T_jiraId", "T_repositoryPath")
+        # insert_issue(con, issue1, "TEST_project")
+        commit1 = g.get_commit_by_id("c7c85ee39892df3ca007c6596c41654865be7e43")
         insert_commit(con, commit1, "TEST_project")
         close_connection(con)
     except ValueError:
