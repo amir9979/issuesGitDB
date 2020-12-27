@@ -1,6 +1,6 @@
-from src import GitCommits as g
-from src import JiraIssues as j
-from src import Matrix as m
+import GitCommits as g
+import JiraIssues as j
+import Matrix as m
 
 
 def main():

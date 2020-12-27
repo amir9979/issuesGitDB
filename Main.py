@@ -1,8 +1,8 @@
-from src import MatrixDB as db
-from src import GitCommits as g
-from src import JiraIssues as j
-from src import Debug
-from src import Matrix
+import MatrixDB as db
+import GitCommits as g
+import JiraIssues as j
+import Debug
+import Matrix
 import pathlib
 
 if __name__ == '__main__':

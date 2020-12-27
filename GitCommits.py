@@ -1,8 +1,8 @@
 import git
 import os
-from src.javadiff import diff as d
-from src import Debug
-from src import JavaAnalyzer as a
+from .javadiff import diff as d
+import Debug
+import JavaAnalyzer as a
 import time
 
 os.environ["GIT_PYTHON_REFRESH"] = "quiet"

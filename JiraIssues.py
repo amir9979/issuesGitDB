@@ -3,7 +3,7 @@ from jira.exceptions import JIRAError
 
 from datetime import datetime
 
-from src import Debug
+import Debug
 
 jira = JIRA(r"http://issues.apache.org/jira")
 

@@ -1,6 +1,6 @@
 import javalang
 import difflib
-from src import Debug
+import Debug
 # from javadiff.methodData import SourceLine
 
 """

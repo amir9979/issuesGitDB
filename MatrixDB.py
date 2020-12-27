@@ -1,10 +1,10 @@
 import json
 import pathlib
 import sqlite3
-from src import GitCommits as g
-from src import JiraIssues as j
-from src import JavaAnalyzer as a
-from src import Debug
+import GitCommits as g
+import JiraIssues as j
+import JavaAnalyzer as a
+import Debug
 
 
 def get_connection(path):
