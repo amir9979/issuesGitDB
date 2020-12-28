@@ -40,6 +40,8 @@ CREATE TABLE IF NOT EXISTS "MethodData" (
 	"Content"		TEXT NOT NULL,
 	"Changed"		BOOLEAN NOT NULL,
 	"Meaning"		TEXT NOT NULL,
+	"Tokens"        TEXT NOT NULL,
+	"NewPath" 		VARCHAR(64),
 	PRIMARY KEY("CommitID","MethodName","OldNew","LineNumber"),
 	FOREIGN KEY("CommitID", "MethodName") REFERENCES "CommitChanges"("CommitID", "MethodName") ON DELETE RESTRICT ON UPDATE RESTRICT
 	--FOREIGN KEY("CommitID") REFERENCES "Commits"("CommitID") ON DELETE RESTRICT ON UPDATE RESTRICT,
