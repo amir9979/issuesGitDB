@@ -23,6 +23,17 @@ if __name__ == '__main__':
     # Project Handling
     db_connection.insert_project(PROJECT_NAME, JIRA_PROJECT_ID, GIT_REPO_PATH)
 
+    # Commits Handling
+    g.set_repo_path(GIT_REPO_PATH_LOCAL)
+    comms = g.get_commits_files(GIT_REPO_PATH_LOCAL)
+    commits = list(filter(lambda c: c.is_java, comms))
+    if Debug.mode:
+        # len(commits) - 4546
+        print("number of commits: {0}".format(len(commits)))
+
+    for commit in commits:
+        db.insert_commit(db_connection, commit, PROJECT_NAME)
+
     # Issues Handling
     if Debug.mode:
         print("creating issue lists")
@@ -44,16 +55,6 @@ if __name__ == '__main__':
 
     all_issues = issues_bugs_improvements + issues_features  # union both issue lists to one
 
-    # Commits Handling
-    g.set_repo_path(GIT_REPO_PATH_LOCAL)
-    comms = g.get_commits_files(GIT_REPO_PATH_LOCAL)
-    commits = list(filter(lambda c: c.is_java, comms))
-    if Debug.mode:
-        # len(commits) - 4546
-        print("number of commits: {0}".format(len(commits)))
-
-    for commit in commits[:300]:
-        db.insert_commit(db_connection, commit, PROJECT_NAME)
 
     # Matrix Handling
     m = Matrix.create_matrix(all_issues, commits)
