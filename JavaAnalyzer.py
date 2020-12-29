@@ -68,21 +68,3 @@ class ChangedLine(object):
         self.is_changed = is_changed
         self.meaning = str(meaning)
         self.tokens = tokens
-
-
-if __name__ == '__main__':
-    text1 = ["abababa", "aaa"]
-    text2 = ["aaa", "bbb"]
-    diff1 = difflib.ndiff(text1, text2)
-    count = 0
-    before = list()
-    after = list()
-    # lines1 = diff1.read()
-    # print(diff1)
-    for line1 in diff1:
-        # if count > 2:
-        print("*" + line1[0] + "*")
-        count += 1
-
-
-

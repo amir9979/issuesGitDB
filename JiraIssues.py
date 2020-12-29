@@ -52,9 +52,3 @@ def get_issue_type(issue):
 def get_issue_creation_date(issue):
     long_time = str(issue.fields.created).replace('T', ' ')
     return long_time[:19]
-
-
-if __name__ == '__main__':
-    jql = '"Project" = "Commons Lang" AND statusCategory = Done and key = LANG-1570'
-    issue = get_issues_list(jql)[0]
-    print(get_issue_creation_date(issue))
