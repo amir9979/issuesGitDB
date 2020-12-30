@@ -52,7 +52,9 @@ jobs:
         run: python ./javadiff/setup.py install
       
       - name: echo
-        run: echo 123 > data/r.txt
+        run: |
+          mkdir ./data
+          echo 123 > ./data/r.txt
 
       - name: Checkout tools repo
         continue-on-error: true
