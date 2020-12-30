@@ -8,7 +8,7 @@ import pandas as pd
 class Connection:
     def __init__(self, conn):
         self._connection = conn
-        self.init_db()
+        # self.init_db()
         self.projects = []
         self.commits = []
         self.issues = []
@@ -27,7 +27,7 @@ class Connection:
         #     print("Error %s:" % e.args[0])
 
     def init_db(self):
-        with open(r"C:\Users\User\Documents\GitHub\issuesGitDB\table creation.sql") as f:
+        with open(r"table creation.sql") as f:
             cursor = self._connection.cursor()
             sql_as_string = f.read()
             cursor.executescript(sql_as_string)
@@ -40,11 +40,11 @@ class Connection:
         pd.DataFrame(self.commit_changes, columns=["CommitID", "MethodName", "NewPath", "OldPath"]).to_csv(r"data\commit_changes.csv", index=False, sep=';')
         pd.DataFrame(self.method_data, columns=["CommitID", "MethodName", "OldNew", "LineNumber", "Content", "Changed", "Meaning", "Tokens", "NewPath"]).to_csv(r"data\method_data.csv", index=False, sep=';')
         pd.DataFrame(self.commits_issues_linkage, columns=["IssueID", "CommitID"]).to_csv(r"data\commits_issues_linkage.csv", index=False, sep=';')
-        self._connection.close()
+        # self._connection.close()
 
-    def insert_project(self, projectName, JiraProjectId, GitRepositoryPath):
-        self._insert("INSERT INTO Projects (ProjectName, JiraProjectId, GitRepositoryPath) VALUES (?,?,?)", (projectName, JiraProjectId, GitRepositoryPath))
-        self.projects.append((projectName, JiraProjectId, GitRepositoryPath))
+    def insert_project(self, projectName, JiraProjectId):
+        self._insert("INSERT INTO Projects (ProjectName, JiraProjectId, GitRepositoryPath) VALUES (?,?,?)", (projectName, JiraProjectId, ""))
+        self.projects.append((projectName, JiraProjectId, ""))
 
     def insert_commit(self, commit, projectName):
         self._insert("INSERT INTO Commits (CommitID, ProjectName, Summary, Message, Date, ParentID) VALUES (?,?,?,?,?,?)", (commit.id, projectName, commit.summary, commit.message, commit.date, commit.parent_id))
