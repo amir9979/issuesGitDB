@@ -1,7 +1,9 @@
 import git
 import os
-from javadiff import diff as d
-import Debug
+try:
+    from javadiff.javadiff import diff as d
+except:
+    from javadiff import diff as d
 import JavaAnalyzer as a
 import time
 import re
