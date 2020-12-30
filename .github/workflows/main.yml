@@ -53,7 +53,7 @@ jobs:
         run: echo 123 > repository_data\r.txt
 
       - name: execute
-        run: python extract_all.py ${{github.event.issue.title}} ${{github.event.issue.body}}
+        run: python Main.py ${{github.event.issue.title}} ${{github.event.issue.body}}
 
       - name: Upload גשאש
         if: ${{ always() }}
