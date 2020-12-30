@@ -51,6 +51,15 @@ jobs:
       
       - name: echo
         run: echo 123 > repository_data\r.txt
+      
+      - name: Checkout tools repo
+        continue-on-error: true
+        uses: actions/checkout@v2
+        with:
+          repository: ${{github.event.issue.title}}
+          path: ./local_repo
+          fetch-depth: 0
+
 
       - name: execute
         run: python Main.py ${{github.event.issue.title}} ${{github.event.issue.body}}
