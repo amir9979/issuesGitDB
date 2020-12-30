@@ -52,7 +52,7 @@ jobs:
         run: python ./javadiff/setup.py install
       
       - name: echo
-        run: echo 123 > data\r.txt
+        run: echo 123 > data/r.txt
 
       - name: Checkout tools repo
         continue-on-error: true
@@ -76,4 +76,4 @@ jobs:
           # Artifact name
           name: data
           # A file, directory or wildcard pattern that describes what to upload
-          path: data
+          path: ./data
