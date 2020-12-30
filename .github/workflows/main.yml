@@ -53,9 +53,6 @@ jobs:
       
       - name: echo
         run: echo 123 > data\r.txt
-      - name: longpaths
-        run: git config --system core.longpaths true
-
 
       - name: Checkout tools repo
         continue-on-error: true
