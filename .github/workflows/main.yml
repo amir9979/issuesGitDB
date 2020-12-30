@@ -45,6 +45,8 @@ jobs:
           pip install javalang
           pip install pathlib
           pip install junitparser
+          pip install pandas
+          pip install numpy
 
       - name: javadiff_install
         run: python ./javadiff/setup.py install
