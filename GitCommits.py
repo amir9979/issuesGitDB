@@ -100,10 +100,6 @@ def get_commit_changes(commit):
     except Exception as e:
         print(e)
         return None
-    print("BEFORE:")
-    print(changed_methods_before)
-    print("AFTER:")
-    print(changed_methods_after)
     changed_before_dict = {m.method_name_parameters: (m.file_name, m.source_lines) for m in changed_methods_before}
     before_dict = {m.method_name_parameters: (m.file_name, m.source_lines) for m in before_methods}
     for new_method in changed_methods_after:
