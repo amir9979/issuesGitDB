@@ -25,7 +25,7 @@ if __name__ == '__main__':
     comms = g.get_commits_files(GIT_REPO_PATH_LOCAL)
     commits = list(filter(lambda c: c.is_java, comms))
 
-    for commit in commits:
+    for commit in commits[:20]:
         db.insert_commit(db_connection, commit, PROJECT_NAME)
 
     # Issues Handling
