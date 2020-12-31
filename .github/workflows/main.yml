@@ -52,8 +52,10 @@ jobs:
         run: python ./javadiff/setup.py install
       
       - name: echo
-        run: echo 123 > data\r.txt
-      
+        run: |
+          mkdir ./data
+          echo 123 > ./data/r.txt
+
       - name: Checkout tools repo
         continue-on-error: true
         uses: actions/checkout@v2
@@ -66,6 +68,9 @@ jobs:
       - name: execute
         run: python Main.py ${{github.event.issue.title}} ${{github.event.issue.body}}
 
+      - name: ls
+        run: ls -R
+
       - name: Upload data
         if: ${{ always() }}
         uses: actions/upload-artifact@v2
@@ -73,4 +78,4 @@ jobs:
           # Artifact name
           name: data
           # A file, directory or wildcard pattern that describes what to upload
-          path: data
+          path: ./data
