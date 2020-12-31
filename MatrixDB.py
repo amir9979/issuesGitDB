@@ -4,6 +4,7 @@ import GitCommits as g
 import JiraIssues as j
 import JavaAnalyzer as a
 import pandas as pd
+import os
 
 class Connection:
     def __init__(self, conn):
@@ -16,6 +17,7 @@ class Connection:
         self.commit_changes = []
         self.method_data = []
         self.commits_issues_linkage = []
+        self.output_dir = os.path.realpath('./data')
 
     def _insert(self, sql_query, data):
         pass
@@ -33,13 +35,14 @@ class Connection:
             cursor.executescript(sql_as_string)
 
     def close(self):
-        pd.DataFrame(self.projects, columns=["ProjectName", "JiraProjectId", "GitRepositoryPath"]).to_csv(r"data\projects.csv", index=False, sep=';')
-        pd.DataFrame(self.commits, columns=["CommitID", "ProjectName", "Summary", "Message", "Date", "ParentID"]).to_csv(r"data\commits.csv", index=False, sep=';')
-        pd.DataFrame(self.issues, columns=["IssueID", "IssueType", "ProjectName", "Summary", "Description", "Status", "Date"]).to_csv(r"data\issues.csv", index=False, sep=';')
-        pd.DataFrame(self.commits_files, columns=["CommitID", "Path", "FileType"]).to_csv(r"data\commits_files.csv", index=False, sep=';')
-        pd.DataFrame(self.commit_changes, columns=["CommitID", "MethodName", "NewPath", "OldPath"]).to_csv(r"data\commit_changes.csv", index=False, sep=';')
-        pd.DataFrame(self.method_data, columns=["CommitID", "MethodName", "OldNew", "LineNumber", "Content", "Changed", "Meaning", "Tokens", "NewPath"]).to_csv(r"data\method_data.csv", index=False, sep=';')
-        pd.DataFrame(self.commits_issues_linkage, columns=["IssueID", "CommitID"]).to_csv(r"data\commits_issues_linkage.csv", index=False, sep=';')
+        print(self.output_dir)
+        pd.DataFrame(self.projects, columns=["ProjectName", "JiraProjectId", "GitRepositoryPath"]).to_csv(os.path.join(self.output_dir, r"projects.csv"), index=False, sep=';')
+        pd.DataFrame(self.commits, columns=["CommitID", "ProjectName", "Summary", "Message", "Date", "ParentID"]).to_csv(os.path.join(self.output_dir, r"commits.csv"), index=False, sep=';')
+        pd.DataFrame(self.issues, columns=["IssueID", "IssueType", "ProjectName", "Summary", "Description", "Status", "Date"]).to_csv(os.path.join(self.output_dir, r"issues.csv"), index=False, sep=';')
+        pd.DataFrame(self.commits_files, columns=["CommitID", "Path", "FileType"]).to_csv(os.path.join(self.output_dir, r"commits_files.csv"), index=False, sep=';')
+        pd.DataFrame(self.commit_changes, columns=["CommitID", "MethodName", "NewPath", "OldPath"]).to_csv(os.path.join(self.output_dir, r"commit_changes.csv"), index=False, sep=';')
+        pd.DataFrame(self.method_data, columns=["CommitID", "MethodName", "OldNew", "LineNumber", "Content", "Changed", "Meaning", "Tokens", "NewPath"]).to_csv(os.path.join(self.output_dir, r"method_data.csv"), index=False, sep=';')
+        pd.DataFrame(self.commits_issues_linkage, columns=["IssueID", "CommitID"]).to_csv(os.path.join(self.output_dir, r"commits_issues_linkage.csv"), index=False, sep=';')
         # self._connection.close()
 
     def insert_project(self, projectName, JiraProjectId):
@@ -93,11 +96,11 @@ class Connection:
 
 
 def get_connection(path):
-    return Connection(sqlite3.connect(path))
+    return Connection(path)
 
 
 def close_connection(conn):
-    if conn: conn.close()
+    conn.close()
 
 
 def insert_commit(conn, commit, projectName):
