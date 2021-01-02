@@ -50,11 +50,11 @@ def get_commits_files(repo):
         repo = git.Repo(repo)
     data = repo.git.log('--numstat','--pretty=format:"sha: %H"').split("sha: ")
     comms = {}
-    for d in data[1:]:
-        d = d.replace('"', '').replace('\n\n', '\n').split('\n')
-        commit_sha = d[0]
+    for d_ in data[1:]:
+        d_ = d_.replace('"', '').replace('\n\n', '\n').split('\n')
+        commit_sha = d_[0]
         comms[commit_sha] = []
-        for x in d[1:-1]:
+        for x in d_[1:-1]:
             insertions, deletions, name = x.split('\t')
             names = fix_renamed_files([name])
             comms[commit_sha].extend(list(map(lambda file_name: (commit_sha, file_name, insertions, deletions), names)))
