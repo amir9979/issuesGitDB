@@ -6,9 +6,11 @@ import JavaAnalyzer as a
 import pandas as pd
 import os
 
+
 class Connection:
-    def __init__(self, conn):
-        self._connection = conn
+    def __init__(self, conn_path):
+        self.output_dir = os.path.realpath('./data')
+        self.connection_path = os.path.join(self.output_dir, conn_path)
         self.init_db()
         self.projects = []
         self.commits = []
@@ -17,19 +19,19 @@ class Connection:
         self.commit_changes = []
         self.method_data = []
         self.commits_issues_linkage = []
-        self.output_dir = os.path.realpath('./data')
 
     def _insert(self, sql_query, data):
         try:
-            with self._connection:
-                cur = self._connection.cursor()
+            with self.connection:
+                cur = self.connection.cursor()
                 cur.execute(sql_query, data)
         except sqlite3.Error as e:
             print("Error %s:" % e.args[0])
 
     def init_db(self):
+        self.connection = sqlite3.connect(self.connection_path)
         with open(r"table creation.sql") as f:
-            cursor = self._connection.cursor()
+            cursor = self.connection.cursor()
             sql_as_string = f.read()
             cursor.executescript(sql_as_string)
 
@@ -42,7 +44,7 @@ class Connection:
         pd.DataFrame(self.commit_changes, columns=["CommitID", "MethodName", "NewPath", "OldPath"]).to_csv(os.path.join(self.output_dir, r"commit_changes.csv"), index=False, sep=';')
         pd.DataFrame(self.method_data, columns=["CommitID", "MethodName", "OldNew", "LineNumber", "Content", "Changed", "Meaning", "Tokens", "NewPath"]).to_csv(os.path.join(self.output_dir, r"method_data.csv"), index=False, sep=';')
         pd.DataFrame(self.commits_issues_linkage, columns=["IssueID", "CommitID"]).to_csv(os.path.join(self.output_dir, r"commits_issues_linkage.csv"), index=False, sep=';')
-        self._connection.close()
+        self.connection.close()
 
     def insert_project(self, projectName, JiraProjectId):
         self._insert("INSERT INTO Projects (ProjectName, JiraProjectId, GitRepositoryPath) VALUES (?,?,?)", (projectName, JiraProjectId, ""))
