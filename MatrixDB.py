@@ -9,7 +9,7 @@ import os
 class Connection:
     def __init__(self, conn):
         self._connection = conn
-        # self.init_db()
+        self.init_db()
         self.projects = []
         self.commits = []
         self.issues = []
@@ -20,13 +20,12 @@ class Connection:
         self.output_dir = os.path.realpath('./data')
 
     def _insert(self, sql_query, data):
-        pass
-        # try:
-        #     with self._connection:
-        #         cur = self._connection.cursor()
-        #         cur.execute(sql_query, data)
-        # except sqlite3.Error as e:
-        #     print("Error %s:" % e.args[0])
+        try:
+            with self._connection:
+                cur = self._connection.cursor()
+                cur.execute(sql_query, data)
+        except sqlite3.Error as e:
+            print("Error %s:" % e.args[0])
 
     def init_db(self):
         with open(r"table creation.sql") as f:
@@ -43,7 +42,7 @@ class Connection:
         pd.DataFrame(self.commit_changes, columns=["CommitID", "MethodName", "NewPath", "OldPath"]).to_csv(os.path.join(self.output_dir, r"commit_changes.csv"), index=False, sep=';')
         pd.DataFrame(self.method_data, columns=["CommitID", "MethodName", "OldNew", "LineNumber", "Content", "Changed", "Meaning", "Tokens", "NewPath"]).to_csv(os.path.join(self.output_dir, r"method_data.csv"), index=False, sep=';')
         pd.DataFrame(self.commits_issues_linkage, columns=["IssueID", "CommitID"]).to_csv(os.path.join(self.output_dir, r"commits_issues_linkage.csv"), index=False, sep=';')
-        # self._connection.close()
+        self._connection.close()
 
     def insert_project(self, projectName, JiraProjectId):
         self._insert("INSERT INTO Projects (ProjectName, JiraProjectId, GitRepositoryPath) VALUES (?,?,?)", (projectName, JiraProjectId, ""))
