@@ -39,18 +39,18 @@ def analyze_changes(old_lines, new_lines):
         #     print(line)
         if line[0] == '-':
             changes.append(ChangedLine("OLD", count_old, line[1:], True, old_lines[count_old].decls,
-                                       old_lines[count_old].tokens))
+                                       old_lines[count_old].tokens, old_lines[count_old].halstead))
             count_old += 1
         elif line[0] == '+':
             changes.append(ChangedLine("NEW", count_new, line[1:], True, new_lines[count_new].decls,
-                                       new_lines[count_new].tokens))
+                                       new_lines[count_new].tokens, new_lines[count_new].halstead))
             count_new += 1
         elif line[0] == ' ':
             changes.append(ChangedLine("OLD", count_old, line[1:], False, old_lines[count_old].decls,
-                                       old_lines[count_old].tokens))
+                                       old_lines[count_old].tokens, old_lines[count_old].halstead))
             count_old += 1
             changes.append(ChangedLine("NEW", count_new, line[1:], False, new_lines[count_new].decls,
-                                       new_lines[count_new].tokens))
+                                       new_lines[count_new].tokens, new_lines[count_new].halstead))
             count_new += 1
         elif line[0] == '?':
             continue
@@ -61,10 +61,11 @@ def analyze_changes(old_lines, new_lines):
 
 
 class ChangedLine(object):
-    def __init__(self, line_type, line_number, content, is_changed, meaning, tokens):
+    def __init__(self, line_type, line_number, content, is_changed, meaning, tokens, halstead):
         self.line_type = line_type
         self.line_number = line_number
         self.content = content
         self.is_changed = is_changed
         self.meaning = str(meaning)
-        self.tokens = tokens
+        self.tokens = str(tokens)
+        self.halstead = str(halstead)

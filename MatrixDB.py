@@ -42,7 +42,7 @@ class Connection:
         pd.DataFrame(self.issues, columns=["IssueID", "IssueType", "ProjectName", "Summary", "Description", "Status", "Date"]).to_csv(os.path.join(self.output_dir, r"issues.csv"), index=False, sep=';')
         pd.DataFrame(self.commits_files, columns=["CommitID", "Path", "FileType"]).to_csv(os.path.join(self.output_dir, r"commits_files.csv"), index=False, sep=';')
         pd.DataFrame(self.commit_changes, columns=["CommitID", "MethodName", "NewPath", "OldPath"]).to_csv(os.path.join(self.output_dir, r"commit_changes.csv"), index=False, sep=';')
-        pd.DataFrame(self.method_data, columns=["CommitID", "MethodName", "OldNew", "LineNumber", "Content", "Changed", "Meaning", "Tokens", "NewPath"]).to_csv(os.path.join(self.output_dir, r"method_data.csv"), index=False, sep=';')
+        pd.DataFrame(self.method_data, columns=["CommitID", "MethodName", "OldNew", "LineNumber", "Content", "Changed", "Meaning", "Tokens", "Halstead", "NewPath"]).to_csv(os.path.join(self.output_dir, r"method_data.csv"), index=False, sep=';')
         pd.DataFrame(self.commits_issues_linkage, columns=["IssueID", "CommitID"]).to_csv(os.path.join(self.output_dir, r"commits_issues_linkage.csv"), index=False, sep=';')
         self.connection.close()
 
@@ -86,9 +86,13 @@ class Connection:
             token = ""
         else:
             token = json.dumps(line.tokens)
-        self._insert("INSERT INTO MethodData (CommitID, MethodName, OldNew, LineNumber, Content, Changed, Meaning, Tokens, NewPath) VALUES (?,?,?,?,?,?,?, ?, ?)",
+        if line.halstead == '{}':
+            halstead = ""
+        else:
+            halstead = json.dumps(line.tokens)
+        self._insert("INSERT INTO MethodData (CommitID, MethodName, OldNew, LineNumber, Content, Changed, Meaning, Tokens, Halstead, NewPath) VALUES (?,?,?,?,?,?,?, ?, ?, ?)",
                      (commit.id, method_name, line_type, line_number, content, changed, meaning, token, new_path))
-        self.method_data.append((commit.id, method_name, line_type, line_number, content, changed, meaning, token, new_path))
+        self.method_data.append((commit.id, method_name, line_type, line_number, content, changed, meaning, token, halstead, new_path))
 
     def insert_linkage(self, commit, issue):
         issue_id = j.get_issue_id(issue)

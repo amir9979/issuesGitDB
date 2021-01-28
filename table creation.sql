@@ -26,8 +26,8 @@ CREATE TABLE IF NOT EXISTS "CommitFiles" (
 CREATE TABLE IF NOT EXISTS "CommitChanges" (
 	"CommitID" 		VARCHAR(40) NOT NULL,
 	"MethodName" 		VARCHAR(100) NOT NULL,
-	"NewPath" 		VARCHAR(64),
-	"OldPath" 		VARCHAR(64),
+	"NewPath" 		VARCHAR(100),
+	"OldPath" 		VARCHAR(100),
 	PRIMARY KEY("CommitID","MethodName"),
 	FOREIGN KEY("CommitID") REFERENCES "Commits"("CommitID") ON DELETE RESTRICT ON UPDATE RESTRICT
 );
@@ -41,7 +41,8 @@ CREATE TABLE IF NOT EXISTS "MethodData" (
 	"Changed"		BOOLEAN NOT NULL,
 	"Meaning"		TEXT NOT NULL,
 	"Tokens"        TEXT NOT NULL,
-	"NewPath" 		VARCHAR(64),
+	"Halstead"        TEXT NOT NULL,
+	"NewPath" 		VARCHAR(100),
 	PRIMARY KEY("CommitID","MethodName","OldNew","LineNumber"),
 	FOREIGN KEY("CommitID", "MethodName") REFERENCES "CommitChanges"("CommitID", "MethodName") ON DELETE RESTRICT ON UPDATE RESTRICT
 	--FOREIGN KEY("CommitID") REFERENCES "Commits"("CommitID") ON DELETE RESTRICT ON UPDATE RESTRICT,
