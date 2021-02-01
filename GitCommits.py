@@ -58,7 +58,14 @@ def get_commits_files(repo):
             insertions, deletions, name = x.split('\t')
             names = fix_renamed_files([name])
             comms[commit_sha].extend(list(map(lambda file_name: (commit_sha, file_name, insertions, deletions), names)))
-    return list(map(lambda x: Commit(repo.commit(x), comms[x]), filter(lambda x: comms[x], comms)))
+    ans = []
+    for c in comms:
+        if comms[c]:
+            try:
+                ans.append(Commit(repo.commit(c), comms[c]))
+            except Exception as e:
+                pass
+    return ans #list(map(lambda x: Commit(repo.commit(x), comms[x]), filter(lambda x: comms[x], comms)))
 
 
 def fix_renamed_files(files):
