@@ -9,9 +9,14 @@ if __name__ == '__main__':
 
     PROJECT_NAME = sys.argv[1] # "commons-math"
     JIRA_PROJECT_ID = sys.argv[2] # "MATH"
+    commits_start = None
+    commits_end = None
+    if len(sys.argv) > 4:
+        commits_start = int(sys.argv[3])
+        commits_end = int(sys.argv[4])
 
     DB_PATH = r"CommitIssueDB.db"
-    GIT_REPO_PATH_LOCAL = r"local_repo"
+    GIT_REPO_PATH_LOCAL = r"C:\Users\User\Documents\GitHub\issuesGitDB\local_repo"
     JIRA_PATH = r"http://issues.apache.org/jira"
 
     # Get DB connection
@@ -24,10 +29,13 @@ if __name__ == '__main__':
     g.set_repo_path(GIT_REPO_PATH_LOCAL)
     comms = g.get_commits_files(GIT_REPO_PATH_LOCAL)
     commits = list(filter(lambda c: c.is_java, comms))
+    if commits_start:
+        commits_num = commits[commits_start: commits_end]
 
     for commit in commits:
         db.insert_commit(db_connection, commit, PROJECT_NAME)
 
+    exit()
     # Issues Handling
     j.set_jira(JIRA_PATH)
     jql_features = 'project = {0} AND issuetype = "New Feature" AND statusCategory = Done'.format(JIRA_PROJECT_ID)

@@ -11,7 +11,7 @@ class Connection:
     def __init__(self, conn_path):
         self.output_dir = os.path.realpath('./data')
         self.connection_path = os.path.join(self.output_dir, conn_path)
-        self.init_db()
+        # self.init_db()
         self.projects = []
         self.commits = []
         self.issues = []
