@@ -21,12 +21,13 @@ class Connection:
         self.commits_issues_linkage = []
 
     def _insert(self, sql_query, data):
-        try:
-            with self.connection:
-                cur = self.connection.cursor()
-                cur.execute(sql_query, data)
-        except sqlite3.Error as e:
-            print("Error %s:" % e.args[0])
+        pass
+        # try:
+        #     with self.connection:
+        #         cur = self.connection.cursor()
+        #         cur.execute(sql_query, data)
+        # except sqlite3.Error as e:
+        #     print("Error %s:" % e.args[0])
 
     def init_db(self):
         self.connection = sqlite3.connect(self.connection_path)
