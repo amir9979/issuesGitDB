@@ -15,6 +15,11 @@ jobs:
   build:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
+    
+    strategy:
+      fail-fast: false
+      matrix:
+        commit_ind: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40]
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -66,7 +71,7 @@ jobs:
 
 
       - name: execute
-        run: python Main.py ${{github.event.issue.title}} ${{github.event.issue.body}}
+        run: python Main.py ${{ matrix.commit_ind }} ${{github.event.issue.title}} ${{github.event.issue.body}}
 
       - name: ls
         run: ls -R
