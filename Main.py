@@ -18,7 +18,7 @@ if __name__ == '__main__':
         JIRA_PROJECT_ID = sys.argv[3]  # "MATH"
 
     DB_PATH = r"CommitIssueDB.db"
-    GIT_REPO_PATH_LOCAL = r"C:\Users\User\Documents\GitHub\issuesGitDB\local_repo"
+    GIT_REPO_PATH_LOCAL = r"local_repo"
     JIRA_PATH = r"http://issues.apache.org/jira"
 
     # Get DB connection
