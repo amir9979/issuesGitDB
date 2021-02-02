@@ -32,6 +32,9 @@ if __name__ == '__main__':
     if commits_start:
         commits_num = commits[commits_start: commits_end]
 
+    if len(commits) == 0:
+        exit()
+
     for commit in commits:
         db.insert_commit(db_connection, commit, PROJECT_NAME)
 
