@@ -12,7 +12,7 @@ if __name__ == '__main__':
     commits_start = None
     commits_end = None
     if len(sys.argv) > 3:
-        commits_start = int(sys.argv[3])
+        commits_start = int(sys.argv[3]) * 1000
         commits_end = commits_start + 1000
 
     DB_PATH = r"CommitIssueDB.db"
