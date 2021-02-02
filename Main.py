@@ -35,7 +35,6 @@ if __name__ == '__main__':
     for commit in commits:
         db.insert_commit(db_connection, commit, PROJECT_NAME)
 
-    exit()
     # Issues Handling
     j.set_jira(JIRA_PATH)
     jql_features = 'project = {0} AND issuetype = "New Feature" AND statusCategory = Done'.format(JIRA_PROJECT_ID)
