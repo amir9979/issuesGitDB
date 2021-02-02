@@ -11,9 +11,9 @@ if __name__ == '__main__':
     JIRA_PROJECT_ID = sys.argv[2] # "MATH"
     commits_start = None
     commits_end = None
-    if len(sys.argv) > 4:
+    if len(sys.argv) > 3:
         commits_start = int(sys.argv[3])
-        commits_end = int(sys.argv[4])
+        commits_end = commits_start + 1000
 
     DB_PATH = r"CommitIssueDB.db"
     GIT_REPO_PATH_LOCAL = r"C:\Users\User\Documents\GitHub\issuesGitDB\local_repo"
