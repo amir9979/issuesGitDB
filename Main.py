@@ -4,6 +4,8 @@ import JiraIssues as j
 import Matrix
 import sys
 
+SHIR = True
+
 if __name__ == '__main__':
     # Set variables according to the project
 
@@ -31,35 +33,36 @@ if __name__ == '__main__':
     g.set_repo_path(GIT_REPO_PATH_LOCAL)
     comms = g.get_commits_files(GIT_REPO_PATH_LOCAL)
     commits = list(filter(lambda c: c.is_java, comms))
-    if commits_start:
-        commits_num = commits[commits_start: commits_end]
+    if commits_start is not None:
+        commits = commits[commits_start: commits_end]
 
     if len(commits) == 0:
         exit()
 
-    for commit in commits:
+    for ind, commit in enumerate(commits):
+        print(ind)
         db.insert_commit(db_connection, commit, PROJECT_NAME)
 
-    # Issues Handling
-    j.set_jira(JIRA_PATH)
-    jql_features = 'project = {0} AND issuetype = "New Feature" AND statusCategory = Done'.format(JIRA_PROJECT_ID)
-    jql_bugs_improvements = 'project = {0} AND issuetype in (Bug, Improvement) AND statusCategory = Done'.format(JIRA_PROJECT_ID)
+    if not SHIR:
+        # Issues Handling
+        j.set_jira(JIRA_PATH)
+        jql_features = 'project = {0} AND issuetype = "New Feature" AND statusCategory = Done'.format(JIRA_PROJECT_ID)
+        jql_bugs_improvements = 'project = {0} AND issuetype in (Bug, Improvement) AND statusCategory = Done'.format(
+            JIRA_PROJECT_ID)
 
-    issues_features = j.get_issues_list(jql_features)
-    for issue in issues_features:
-        db_connection.insert_issue(issue, PROJECT_NAME)
+        issues_features = j.get_issues_list(jql_features)
+        for issue in issues_features:
+            db_connection.insert_issue(issue, PROJECT_NAME)
 
-    issues_bugs_improvements = j.get_issues_list(jql_bugs_improvements)
-    for issue in issues_bugs_improvements:
-        db_connection.insert_issue(issue, PROJECT_NAME)
+        issues_bugs_improvements = j.get_issues_list(jql_bugs_improvements)
+        for issue in issues_bugs_improvements:
+            db_connection.insert_issue(issue, PROJECT_NAME)
 
-    all_issues = issues_bugs_improvements + issues_features  # union both issue lists to one
-
-
-    # Matrix Handling
-    m = Matrix.create_matrix(all_issues, commits)
-    for issue, commit in m:
-        db_connection.insert_linkage(commit, issue)
+        all_issues = issues_bugs_improvements + issues_features  # union both issue lists to one
+        # Matrix Handling
+        m = Matrix.create_matrix(all_issues, commits)
+        for issue, commit in m:
+            db_connection.insert_linkage(commit, issue)
 
     # DONE
     db.close_connection(db_connection)
