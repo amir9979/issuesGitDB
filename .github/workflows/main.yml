@@ -19,7 +19,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        commit_ind: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40]
+        commit_ind: [0, 1, 2]#, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40]
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -81,6 +81,6 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           # Artifact name
-          name: data
+          name: data_${{matrix.commit_ind}}
           # A file, directory or wildcard pattern that describes what to upload
           path: ./data
