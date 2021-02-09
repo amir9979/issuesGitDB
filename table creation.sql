@@ -15,6 +15,15 @@ CREATE TABLE IF NOT EXISTS "Commits" (
 	FOREIGN KEY("ProjectName") REFERENCES "Projects"("ProjectName") ON DELETE RESTRICT ON UPDATE CASCADE 
 );
 
+CREATE TABLE IF NOT EXISTS "Blame" (
+	"CommitID"		VARCHAR(40),
+	"ProjectName"	VARCHAR(32) NOT NULL,
+	"FilePath"		VARCHAR(100),
+	"LineNumber"		INTEGER,
+	"CreatorCommit"			VARCHAR(40),
+	"SourceLine"		VARCHAR(256)
+);
+
 CREATE TABLE IF NOT EXISTS "CommitFiles" (
 	"CommitID" 		VARCHAR(40) NOT NULL,
 	"Path" 			VARCHAR(64) NOT NULL,

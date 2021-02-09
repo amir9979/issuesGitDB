@@ -21,6 +21,7 @@ class Connection:
         self.commit_changes = []
         self.method_data = []
         self.commits_issues_linkage = []
+        self.blame = []
 
     def _insert(self, sql_query, data):
         if self.use_db:
@@ -56,6 +57,13 @@ class Connection:
     def insert_commit(self, commit, projectName):
         self._insert("INSERT INTO Commits (CommitID, ProjectName, Summary, Message, Date, ParentID) VALUES (?,?,?,?,?,?)", (commit.id, projectName, commit.summary, commit.message, commit.date, commit.parent_id))
         self.commits.append((commit.id, projectName, commit.summary, commit.message, commit.date, commit.parent_id))
+        blame = commit.blame()
+        for f in blame:
+            for ind, commit_id, source_line in blame[f]:
+                self.blame.append((commit.id, projectName, f, ind, commit_id.hexsha, source_line))
+                self._insert(
+                    "INSERT INTO Blame (CommitID, ProjectName, FilePath, LineNumber, CreatorCommit, SourceLine) VALUES (?,?,?,?,?,?)",
+                    (commit.id, projectName, f, ind, commit_id.hexsha, source_line))
 
     def insert_issue(self, issue, projectName):
         issue_id = j.get_issue_id(issue)
@@ -94,7 +102,7 @@ class Connection:
         else:
             halstead = json.dumps(line.halstead)
         self._insert("INSERT INTO MethodData (CommitID, MethodName, OldNew, LineNumber, Content, Changed, Meaning, Tokens, Halstead, NewPath) VALUES (?,?,?,?,?,?,?, ?, ?, ?)",
-                     (commit.id, method_name, line_type, line_number, content, changed, meaning, token, new_path))
+                     (commit.id, method_name, line_type, line_number, content, changed, meaning, token, halstead, new_path))
         self.method_data.append((commit.id, method_name, line_type, line_number, content, changed, meaning, token, halstead, new_path))
 
     def insert_linkage(self, commit, issue):

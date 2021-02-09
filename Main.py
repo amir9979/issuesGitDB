@@ -3,7 +3,7 @@ import GitCommits as g
 import JiraIssues as j
 import Matrix
 import sys
-
+import git
 
 if __name__ == '__main__':
     # Set variables according to the project
@@ -19,7 +19,7 @@ if __name__ == '__main__':
         PROJECT_NAME = sys.argv[2]  # "commons-math"
         JIRA_PROJECT_ID = sys.argv[3]  # "MATH"
         if len(sys.argv) > 4:
-            USE_DB = True
+            USE_DB = False
 
     DB_PATH = r"CommitIssueDB.db"
     GIT_REPO_PATH_LOCAL = r"local_repo"

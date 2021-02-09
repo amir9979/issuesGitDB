@@ -7,6 +7,7 @@ except:
 import JavaAnalyzer as a
 import time
 import re
+from functools import reduce
 
 os.environ["GIT_PYTHON_REFRESH"] = "quiet"
 os.environ["GIT_PYTHON_GIT_EXECUTABLE"] = r"C:\Program Files\Gl'it\bin\git.exe"
@@ -43,6 +44,17 @@ class Commit():
 
     def has_java(self):
         return any(list(map(lambda f: f[1].endswith('java'), self.committed_files)))
+
+    def blame(self):
+        repo = self.commit_object.repo
+        ans = {}
+        for f in self.committed_files:
+            if f[1].endswith('java'):
+                blame = repo.blame(self.id, f[1])
+                blame = reduce(list.__add__, map(lambda x: list(map(lambda y: (x[0], y), x[1])), blame), [])
+                commits, source_code = list(zip(*blame))
+                ans[f[1]] = list(zip(range(len(blame)), commits, source_code))
+        return ans
 
 
 def get_commits_files(repo):
