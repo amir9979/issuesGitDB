@@ -5,14 +5,14 @@ import JiraIssues as j
 import JavaAnalyzer as a
 import pandas as pd
 import os
-from Main import SHIR
 
 
 class Connection:
-    def __init__(self, conn_path):
+    def __init__(self, conn_path, use_db=True):
         self.output_dir = os.path.realpath('./data')
         self.connection_path = os.path.join(self.output_dir, conn_path)
-        if not SHIR:
+        self.use_db = use_db
+        if self.use_db:
             self.init_db()
         self.projects = []
         self.commits = []
@@ -23,7 +23,7 @@ class Connection:
         self.commits_issues_linkage = []
 
     def _insert(self, sql_query, data):
-        if not SHIR:
+        if self.use_db:
             try:
                 with self.connection:
                     cur = self.connection.cursor()
@@ -40,7 +40,7 @@ class Connection:
 
     def close(self):
         pd.DataFrame(self.method_data, columns=["CommitID", "MethodName", "OldNew", "LineNumber", "Content", "Changed", "Meaning", "Tokens", "Halstead", "NewPath"]).to_csv(os.path.join(self.output_dir, r"method_data.csv"), index=False, sep='!')
-        if not SHIR:
+        if self.use_db:
             pd.DataFrame(self.projects, columns=["ProjectName", "JiraProjectId", "GitRepositoryPath"]).to_csv(os.path.join(self.output_dir, r"projects.csv"), index=False, sep='!')
             pd.DataFrame(self.commits, columns=["CommitID", "ProjectName", "Summary", "Message", "Date", "ParentID"]).to_csv(os.path.join(self.output_dir, r"commits.csv"), index=False, sep='!')
             pd.DataFrame(self.issues, columns=["IssueID", "IssueType", "ProjectName", "Summary", "Description", "Status", "Date"]).to_csv(os.path.join(self.output_dir, r"issues.csv"), index=False, sep='!')
@@ -103,16 +103,16 @@ class Connection:
         self.commits_issues_linkage.append((issue_id, commit.id))
 
 
-def get_connection(path):
-    return Connection(path)
+def get_connection(path, use_db):
+    return Connection(path, use_db)
 
 
 def close_connection(conn):
     conn.close()
 
 
-def insert_commit(conn, commit, projectName):
-    if not SHIR:
+def insert_commit(conn, commit, projectName, use_db=True):
+    if use_db:
         conn.insert_commit(commit, projectName)
 
         for code_file in commit.code_files:
@@ -123,11 +123,11 @@ def insert_commit(conn, commit, projectName):
     changes = g.get_commit_changes(commit)
     if changes is not None:
         for diff in changes:
-            insert_changes(conn, commit, diff)
+            insert_changes(conn, commit, diff, use_db)
 
 
-def insert_changes(conn, commit, diff):
-    if not SHIR:
+def insert_changes(conn, commit, diff, use_db):
+    if use_db:
         conn.insert_changes(commit, diff)
     method_name, new_path, new_lines, old_path, old_lines = diff
     changed_lines = a.analyze_changes(old_lines, new_lines)

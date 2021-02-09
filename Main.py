@@ -4,7 +4,6 @@ import JiraIssues as j
 import Matrix
 import sys
 
-SHIR = True
 
 if __name__ == '__main__':
     # Set variables according to the project
@@ -13,18 +12,21 @@ if __name__ == '__main__':
     JIRA_PROJECT_ID = sys.argv[2] # "MATH"
     commits_start = None
     commits_end = None
+    USE_DB = True
     if len(sys.argv) > 3:
         commits_start = int(sys.argv[1]) * 1000
         commits_end = commits_start + 1000
         PROJECT_NAME = sys.argv[2]  # "commons-math"
         JIRA_PROJECT_ID = sys.argv[3]  # "MATH"
+        if len(sys.argv) > 4:
+            USE_DB = True
 
     DB_PATH = r"CommitIssueDB.db"
     GIT_REPO_PATH_LOCAL = r"local_repo"
     JIRA_PATH = r"http://issues.apache.org/jira"
 
     # Get DB connection
-    db_connection = db.get_connection(DB_PATH)
+    db_connection = db.get_connection(DB_PATH, USE_DB)
 
     # Project Handling
     db_connection.insert_project(PROJECT_NAME, JIRA_PROJECT_ID)
@@ -40,10 +42,9 @@ if __name__ == '__main__':
         exit()
 
     for ind, commit in enumerate(commits):
-        print(ind)
-        db.insert_commit(db_connection, commit, PROJECT_NAME)
+        db.insert_commit(db_connection, commit, PROJECT_NAME, USE_DB)
 
-    if not SHIR:
+    if USE_DB:
         # Issues Handling
         j.set_jira(JIRA_PATH)
         jql_features = 'project = {0} AND issuetype = "New Feature" AND statusCategory = Done'.format(JIRA_PROJECT_ID)
