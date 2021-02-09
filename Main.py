@@ -3,7 +3,6 @@ import GitCommits as g
 import JiraIssues as j
 import Matrix
 import sys
-import git
 
 if __name__ == '__main__':
     # Set variables according to the project
@@ -13,13 +12,15 @@ if __name__ == '__main__':
     commits_start = None
     commits_end = None
     USE_DB = True
+    QUICK_MODE = False
     if len(sys.argv) > 3:
         commits_start = int(sys.argv[1]) * 1000
         commits_end = commits_start + 1000
         PROJECT_NAME = sys.argv[2]  # "commons-math"
         JIRA_PROJECT_ID = sys.argv[3]  # "MATH"
+        USE_DB = False
         if len(sys.argv) > 4:
-            USE_DB = False
+            QUICK_MODE = True
 
     DB_PATH = r"CommitIssueDB.db"
     GIT_REPO_PATH_LOCAL = r"local_repo"
@@ -34,17 +35,17 @@ if __name__ == '__main__':
     # Commits Handling
     g.set_repo_path(GIT_REPO_PATH_LOCAL)
     comms = g.get_commits_files(GIT_REPO_PATH_LOCAL)
-    commits = list(filter(lambda c: c.is_java, comms))
+    all_commits = list(filter(lambda c: c.is_java, comms))
+    commits = all_commits
     if commits_start is not None:
-        commits = commits[commits_start: commits_end]
-
-    if len(commits) == 0:
-        exit()
+        commits = all_commits[commits_start: commits_end]
+        if len(commits) == 0:
+            exit()
 
     for ind, commit in enumerate(commits):
-        db.insert_commit(db_connection, commit, PROJECT_NAME, USE_DB)
+        db.insert_commit(db_connection, commit, PROJECT_NAME, QUICK_MODE)
 
-    if USE_DB:
+    if not QUICK_MODE or commits_start == 0:
         # Issues Handling
         j.set_jira(JIRA_PATH)
         jql_features = 'project = {0} AND issuetype = "New Feature" AND statusCategory = Done'.format(JIRA_PROJECT_ID)
@@ -61,7 +62,7 @@ if __name__ == '__main__':
 
         all_issues = issues_bugs_improvements + issues_features  # union both issue lists to one
         # Matrix Handling
-        m = Matrix.create_matrix(all_issues, commits)
+        m = Matrix.create_matrix(all_issues, all_commits)
         for issue, commit in m:
             db_connection.insert_linkage(commit, issue)
 

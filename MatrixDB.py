@@ -119,8 +119,8 @@ def close_connection(conn):
     conn.close()
 
 
-def insert_commit(conn, commit, projectName, use_db=True):
-    if use_db:
+def insert_commit(conn, commit, projectName, quick_mode=True):
+    if not quick_mode:
         conn.insert_commit(commit, projectName)
 
         for code_file in commit.code_files:
@@ -131,11 +131,11 @@ def insert_commit(conn, commit, projectName, use_db=True):
     changes = g.get_commit_changes(commit)
     if changes is not None:
         for diff in changes:
-            insert_changes(conn, commit, diff, use_db)
+            insert_changes(conn, commit, diff, quick_mode)
 
 
-def insert_changes(conn, commit, diff, use_db):
-    if use_db:
+def insert_changes(conn, commit, diff, quick_mode):
+    if not quick_mode:
         conn.insert_changes(commit, diff)
     method_name, new_path, new_lines, old_path, old_lines = diff
     changed_lines = a.analyze_changes(old_lines, new_lines)
