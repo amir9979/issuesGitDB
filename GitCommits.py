@@ -50,10 +50,14 @@ class Commit():
         ans = {}
         for f in self.committed_files:
             if f[1].endswith('java'):
-                blame = repo.blame(self.id, f[1])
-                blame = reduce(list.__add__, map(lambda x: list(map(lambda y: (x[0], y), x[1])), blame), [])
-                commits, source_code = list(zip(*blame))
-                ans[f[1]] = list(zip(range(len(blame)), commits, source_code))
+                try:
+                    blame = repo.blame(self.id, f[1])
+                    blame = reduce(list.__add__, map(lambda x: list(map(lambda y: (x[0], y), x[1])), blame), [])
+                    commits, source_code = list(zip(*blame))
+                    ans[f[1]] = list(zip(range(len(blame)), commits, source_code))
+                except:
+                    # deleted
+                    pass
         return ans
 
 
