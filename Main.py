@@ -14,8 +14,9 @@ if __name__ == '__main__':
     USE_DB = True
     QUICK_MODE = False
     if len(sys.argv) > 3:
-        commits_start = int(sys.argv[1]) * 1000
-        commits_end = commits_start + 1000
+        window_size = 500
+        commits_start = int(sys.argv[1]) * window_size
+        commits_end = commits_start + window_size
         PROJECT_NAME = sys.argv[2]  # "commons-math"
         JIRA_PROJECT_ID = sys.argv[3]  # "MATH"
         USE_DB = False
