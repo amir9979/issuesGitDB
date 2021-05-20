@@ -52,6 +52,7 @@ jobs:
           pip install junitparser
           pip install pandas
           pip install numpy
+          pip install pydriller
 
       - name: javadiff_install
         run: python ./javadiff/setup.py install
