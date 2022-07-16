@@ -27,8 +27,10 @@ class RefactoringMinerLocation:
         self.refactor_ind = refactor_ind
         self.side = side
 
-    def get(self):
-        return asdict(self)
+    def get(self, **kargs):
+        d = asdict(self)
+        d.update(kargs)
+        return d
 
 
 @dataclass
@@ -49,7 +51,7 @@ class RefactoringMinerRefactor:
             r.set(repo, sha1, ind, 'right')
 
     def get(self):
-        return list(map(lambda x: x.get(), self.leftSideLocations + self.rightSideLocations)) #{'refactor_type': self.refactor_type, 'description': self.description, 'repository': self.repository, 'sha1': self.sha1}
+        return list(map(lambda x: x.get(refactor_type=self.refactor_type, refactor_description=self.description), self.leftSideLocations + self.rightSideLocations)) #{'refactor_type': self.refactor_type, 'description': self.description, 'repository': self.repository, 'sha1': self.sha1}
 
 
 @dataclass
@@ -77,7 +79,7 @@ class RefactoringMinerOutput:
     def set(self):
         for c in self.commits:
             c.set()
-
+w
     def get(self):
         ans = []
         for r in self.commits:

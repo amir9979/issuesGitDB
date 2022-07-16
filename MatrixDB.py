@@ -19,7 +19,9 @@ class Connection:
         self.issues = []
         self.commits_files = []
         self.commit_changes = []
-        self.method_data = []
+        self.source_lines = []
+        self.source_files = []
+        self.source_methods = []
         self.commits_issues_linkage = []
         self.blame = []
 
@@ -40,7 +42,7 @@ class Connection:
             cursor.executescript(sql_as_string)
 
     def close(self):
-        pd.DataFrame(self.method_data, columns=["CommitID", "MethodName", "OldNew", "LineNumber", "Content", "Changed", "Meaning", "Tokens", "Halstead", "NewPath"]).to_csv(os.path.join(self.output_dir, r"method_data.csv"), index=False, sep='!')
+        pd.DataFrame(self.source_lines, columns=["CommitID", "MethodName", "OldNew", "LineNumber", "Content", "Changed", "Meaning", "Tokens", "Halstead", "NewPath"]).to_csv(os.path.join(self.output_dir, r"method_data.csv"), index=False, sep='!')
         if self.use_db:
             pd.DataFrame(self.projects, columns=["ProjectName", "JiraProjectId", "GitRepositoryPath"]).to_csv(os.path.join(self.output_dir, r"projects.csv"), index=False, sep='!')
             pd.DataFrame(self.commits, columns=["CommitID", "ProjectName", "Summary", "Message", "Date", "ParentID"]).to_csv(os.path.join(self.output_dir, r"commits.csv"), index=False, sep='!')
@@ -103,7 +105,7 @@ class Connection:
             halstead = json.dumps(line.halstead)
         self._insert("INSERT INTO MethodData (CommitID, MethodName, OldNew, LineNumber, Content, Changed, Meaning, Tokens, Halstead, NewPath) VALUES (?,?,?,?,?,?,?, ?, ?, ?)",
                      (commit.id, method_name, line_type, line_number, content, changed, meaning, token, halstead, new_path))
-        self.method_data.append((commit.id, method_name, line_type, line_number, content, changed, meaning, token, halstead, new_path))
+        self.source_lines.append((commit.id, method_name, line_type, line_number, content, changed, meaning, token, halstead, new_path))
 
     def insert_linkage(self, commit, issue):
         issue_id = j.get_issue_id(issue)
